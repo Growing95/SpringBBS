@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="bbs">
+	
+	<!-- 전체 게시물의 수 -->
+	<select id="count" resultType="int">
+		select count(*) from bbs 
+	</select>
+	<!--페이징기법 사용  -->
+	<select id="list2" parameterType="Map" resultType="bvo">
+		select * from (
+			select rownum r_num, a.* from (
+				select * from bbs order by b_idx desc
+			) a
+		) where r_num between #{begin} and #{end}
+	</select>
+	<select id="login" parameterType="mvo" resultType="mvo">
+		select * from members where id=#{id} and pw=#{pw}
+	</select>
+	<select id="list" resultType="bvo">
+		select * from bbs order by b_idx
+	</select> 
+	<insert id="insert" parameterType="bvo">
+		insert into bbs values(bbs_seq.nextval, #{subject},#{writer}, #{content},#{file_name},#{pwd},sysdate,0,#{m_id})
+	</insert>
+	<update id="hitup" parameterType="String">
+		update bbs set hit = hit+1 where b_idx=#{b_idx}
+	</update>
+	<select id="onelist" parameterType="String" resultType="bvo">
+		select * from bbs where b_idx = #{b_idx}
+	</select>
+	<select id="clist" parameterType="String" resultType="cvo">
+		select * from comm where b_idx=#{b_idx} order by c_idx desc
+	</select>
+	<insert id="c_insert" parameterType="cvo">
+		insert into comm values(comment_seq.nextval,#{writer},#{content},null,sysdate,#{b_idx})
+	</insert>
+	<delete id="c_delete" parameterType="String">
+		delete from comm where c_idx = #{c_idx}
+	</delete>
+	<update id="update" parameterType="bvo">
+		update bbs set subject=#{subject}, writer=#{writer}, content=#{content}, file_name=#{file_name} where b_idx = #{b_idx}
+	</update>
+	
+	<delete id="delete" parameterType="String">
+		delete from bbs where b_idx = #{b_idx}
+	</delete>
+	
+	<delete id="c_delete_all" parameterType="String">
+		delete from comm where b_idx = #{b_idx}
+	</delete>
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
